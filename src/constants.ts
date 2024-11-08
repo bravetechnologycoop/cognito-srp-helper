@@ -1,5 +1,5 @@
 import { Buffer } from "buffer/"; // use the browser compatible buffer library
-import { BigInteger } from "jsbn";
+import BigInteger from "./BigInteger";
 
 import { hexHash, padHex } from "./utils";
 

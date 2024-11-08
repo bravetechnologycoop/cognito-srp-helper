@@ -5,7 +5,7 @@
 
 import { Buffer } from "buffer/"; // use the browser compatible buffer library
 import { lib, SHA256 } from "crypto-js";
-import { BigInteger } from "jsbn";
+import BigInteger from "./BigInteger";
 
 import { HEX_TO_SHORT } from "./constants";
 

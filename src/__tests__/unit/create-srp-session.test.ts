@@ -1,5 +1,5 @@
 import { Buffer } from "buffer/";
-import { BigInteger } from "jsbn";
+import BigInteger from "../../BigInteger";
 
 import { createSrpSession } from "../../cognito-srp-helper";
 import { AbortOnZeroASrpError, AbortOnZeroSrpError } from "../../errors";
