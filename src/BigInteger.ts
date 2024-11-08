@@ -8,6 +8,7 @@ function toBigInt(hexString: string): bigint {
     value: bigint;
   
     constructor(value: string | number | BigInteger, radix: number = 10) {
+      console.log('Using patched BigInteger with BigInt');
       if (typeof value === 'string') {
         // Parse the string based on the given radix
         this.value = radix === 16 ? toBigInt(value) : BigInt(value);
