@@ -2,7 +2,6 @@ export default class BigInteger {
   private value: bigint;
 
   static ZERO = new BigInteger("0");
-
   static ONE = new BigInteger("1");
 
   constructor(value: string | bigint, radix = 16) {
@@ -15,9 +14,7 @@ export default class BigInteger {
     } else {
       const isNegative = value.startsWith("-");
       const sanitizedValue = isNegative ? value.slice(1) : value;
-
       this.value = BigInt(`0x${sanitizedValue}`);
-
       if (isNegative) {
         this.value = -this.value;
       }
@@ -41,7 +38,8 @@ export default class BigInteger {
   }
 
   mod(other: BigInteger): BigInteger {
-    return new BigInteger(this.value % other.value);
+    const result = this.value % other.value;
+    return new BigInteger(result < 0n ? result + other.value : result);
   }
 
   modPow(exponent: BigInteger, modulus: BigInteger): BigInteger {
@@ -49,7 +47,7 @@ export default class BigInteger {
       throw new Error("Modulus cannot be zero.");
     }
 
-    let base = this.value % modulus.value;
+    let base = this.mod(modulus).value;
     let exp = exponent.value;
     let result = 1n;
 
@@ -61,7 +59,7 @@ export default class BigInteger {
       base = (base * base) % modulus.value;
     }
 
-    return new BigInteger(result);
+    return new BigInteger(result < 0n ? result + modulus.value : result);
   }
 
   negate(): BigInteger {
