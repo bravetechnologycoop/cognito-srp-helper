@@ -34,9 +34,9 @@
   },
   "scripts": {
     "build": "npm run build:cjs && npm run build:esm && npm run build:types",
-    "build:cjs": "esbuild src/index.ts --bundle --packages=external --minify --format=cjs --outfile=dist/cjs/index.js && echo '{ \"type\": \"commonjs\" }' > dist/cjs/package.json",
-    "build:esm": "esbuild src/index.ts --bundle --packages=external --minify  --format=esm --outfile=dist/esm/index.js && echo '{ \"type\": \"module\" }' > dist/esm/package.json",
-    "build:types": "tsc --emitDeclarationOnly --declaration src/index.ts --esModuleInterop --outDir dist/types",
+    "build:cjs": "esbuild src/index.ts --bundle --packages=external --minify --format=cjs --target=esnext --outfile=dist/cjs/index.js && echo '{ \"type\": \"commonjs\" }' > dist/cjs/package.json",
+    "build:esm": "esbuild src/index.ts --bundle --packages=external --minify --format=esm --target=esnext --outfile=dist/esm/index.js && echo '{ \"type\": \"module\" }' > dist/esm/package.json",
+    "build:types": "tsc -p .tsconfig.dist.json",
     "format": "npm run format:eslint && npm run format:prettier",
     "format:eslint": "eslint -c .eslintrc.cjs --fix src/**",
     "format:prettier": "prettier -c .prettierrc.cjs --write src/**",
@@ -55,6 +55,8 @@
     ]
   },
   "devDependencies": {
+    "@babel/parser": "^7.26.2",
+    "@babel/types": "^7.26.0",
     "@faker-js/faker": "^7.6.0",
     "@types/jest": "^29.2.0",
     "@types/lodash.clonedeep": "^4.5.7",
@@ -82,7 +84,6 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.433.0",
     "@types/crypto-js": "3.1.47",
-    "@types/jsbn": "1.2.30",
     "@types/node": "^18.11.11",
     "buffer": "^6.0.3",
     "crypto-js": "4.2.0"

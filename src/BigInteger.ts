@@ -1,75 +1,91 @@
-// BigInteger.ts
+export default class BigInteger {
+  private value: bigint;
 
-function toBigInt(hexString: string): bigint {
-    return BigInt(`0x${hexString}`);
-  }
-  
-  export default class BigInteger {
-    value: bigint;
-  
-    constructor(value: string | number | BigInteger, radix: number = 10) {
-      console.log('Using patched BigInteger with BigInt');
-      if (typeof value === 'string') {
-        // Parse the string based on the given radix
-        this.value = radix === 16 ? toBigInt(value) : BigInt(value);
-      } else if (typeof value === 'number') {
-        this.value = BigInt(value);
-      } else if (value instanceof BigInteger) {
-        this.value = value.value;
-      } else {
-        throw new Error('Unsupported BigInteger input type');
+  static ZERO = new BigInteger("0");
+
+  static ONE = new BigInteger("1");
+
+  constructor(value: string | bigint, radix = 16) {
+    if (radix !== 16) {
+      throw new Error(`Unsupported radix: ${radix}. Only radix 16 (hexadecimal) is supported.`);
+    }
+
+    if (typeof value === "bigint") {
+      this.value = value;
+    } else {
+      const isNegative = value.startsWith("-");
+      const sanitizedValue = isNegative ? value.slice(1) : value;
+
+      this.value = BigInt(`0x${sanitizedValue}`);
+
+      if (isNegative) {
+        this.value = -this.value;
       }
     }
-  
-    toString(radix: number = 10): string {
-      return this.value.toString(radix);
-    }
-  
-    modPow(exponent: BigInteger, modulus: BigInteger): BigInteger {
-      let base = this.value;
-      let exp = exponent.value;
-      const mod = modulus.value;
-      let result = BigInt(1);
-  
-      base = base % mod;
-      while (exp > BigInt(0)) {
-        if (exp % BigInt(2) === BigInt(1)) {
-          result = (result * base) % mod;
-        }
-        base = (base * base) % mod;
-        exp = exp >> BigInt(1);
-      }
-      return new BigInteger(result.toString(16), 16);
-    }
-  
-    multiply(other: BigInteger): BigInteger {
-      return new BigInteger((this.value * other.value).toString(16), 16);
-    }
-  
-    mod(modulus: BigInteger): BigInteger {
-      return new BigInteger((this.value % modulus.value).toString(16), 16);
-    }
-  
-    add(other: BigInteger): BigInteger {
-      return new BigInteger((this.value + other.value).toString(16), 16);
-    }
-  
-    subtract(other: BigInteger): BigInteger {
-      return new BigInteger((this.value - other.value).toString(16), 16);
-    }
-  
-    compareTo(other: BigInteger): number {
-      if (this.value < other.value) return -1;
-      if (this.value > other.value) return 1;
-      return 0;
-    }
-  
-    equals(other: BigInteger): boolean {
-      return this.value === other.value;
-    }
-  
-    isZero(): boolean {
-      return this.value === BigInt(0);
-    }
   }
-  
+
+  add(other: BigInteger): BigInteger {
+    return new BigInteger(this.value + other.value);
+  }
+
+  subtract(other: BigInteger): BigInteger {
+    return new BigInteger(this.value - other.value);
+  }
+
+  multiply(other: BigInteger): BigInteger {
+    return new BigInteger(this.value * other.value);
+  }
+
+  divide(other: BigInteger): BigInteger {
+    return new BigInteger(this.value / other.value);
+  }
+
+  mod(other: BigInteger): BigInteger {
+    return new BigInteger(this.value % other.value);
+  }
+
+  modPow(exponent: BigInteger, modulus: BigInteger): BigInteger {
+    if (modulus.value === 0n) {
+      throw new Error("Modulus cannot be zero.");
+    }
+
+    let base = this.value % modulus.value;
+    let exp = exponent.value;
+    let result = 1n;
+
+    while (exp > 0n) {
+      if (exp % 2n === 1n) {
+        result = (result * base) % modulus.value;
+      }
+      exp /= 2n;
+      base = (base * base) % modulus.value;
+    }
+
+    return new BigInteger(result);
+  }
+
+  negate(): BigInteger {
+    return new BigInteger(-this.value);
+  }
+
+  abs(): BigInteger {
+    return new BigInteger(this.value < 0n ? -this.value : this.value);
+  }
+
+  compareTo(other: BigInteger): number {
+    if (this.value < other.value) return -1;
+    if (this.value > other.value) return 1;
+    return 0;
+  }
+
+  equals(other: BigInteger): boolean {
+    return this.value === other.value;
+  }
+
+  toString(radix = 16): string {
+    if (radix !== 16) {
+      throw new Error(`Unsupported radix: ${radix}. Only radix 16 (hexadecimal) is supported.`);
+    }
+    return this.value.toString(16);
+  }
+}
